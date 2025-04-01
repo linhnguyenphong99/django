@@ -1,0 +1,10 @@
+Django==4.2
+psycopg2-binary==2.9.9  # Nếu dùng PostgreSQL
+mysqlclient==2.2.0  # Nếu dùng MySQL
+djangorestframework==3.14.0  # Nếu dùng Django REST Framework
+Pillow==10.2.0  # Nếu có xử lý hình ảnh
+whitenoise==6.6.0  # Hỗ trợ phục vụ tĩnh
+gunicorn==21.2.0
+django-cors-headers==4.3.1
+djoser
+
