@@ -35,6 +35,20 @@ services:
     ports:
       - "6379:6379"
 
+  fe:
+    build:
+      context: ..
+      dockerfile: docker/fe/Dockerfile
+    container_name: nextjs_frontend
+    volumes:
+      - ../FE:/app
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+
+
   nginx:
     build:
       context: ..
@@ -45,6 +59,5 @@ services:
       - web
     ports:
       - "80:80"
-
 volumes:
   pg_data:
