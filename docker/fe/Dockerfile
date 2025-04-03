@@ -2,7 +2,7 @@
 FROM node:18 AS builder
 
 WORKDIR /app
-COPY ../FE ./
+COPY ./FE ./
 RUN npm install --frozen-lockfile
 
 # Copy source code and build
