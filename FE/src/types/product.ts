@@ -5,6 +5,6 @@ export interface Product {
     get_absolute_url: string,
     description: string,
     price: string,
-    get_image: string,
-    get_thumbnail: string,
+    image: string,
+    discount: string
 }
