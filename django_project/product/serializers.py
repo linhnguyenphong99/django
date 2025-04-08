@@ -11,8 +11,7 @@ class ProductSerializers(serializers.ModelSerializer):
             'get_absolute_url',
             'description',
             'price',
-            'get_image',
-            'get_thumbnail',
+            'image',
         ]
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:

@@ -33,7 +33,10 @@ INSTALLED_APPS = [
     'corsheaders',
     'djoser',
 
-    'product'
+    'product',
+    'cart',
+    'orders',
+    'payments',
 ]
 
 CORS_ALLOWED_ORIGINS = [

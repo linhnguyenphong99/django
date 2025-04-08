@@ -1,0 +1,163 @@
+[
+    {
+      "model": "product.category",
+      "pk": 1,
+      "fields": {
+        "name": "Laptops",
+        "slug": "laptops"
+      }
+    },
+    {
+      "model": "product.category",
+      "pk": 2,
+      "fields": {
+        "name": "Desktops",
+        "slug": "desktops"
+      }
+    },
+    {
+      "model": "product.category",
+      "pk": 3,
+      "fields": {
+        "name": "Monitors",
+        "slug": "monitors"
+      }
+    },
+    {
+      "model": "product.category",
+      "pk": 4,
+      "fields": {
+        "name": "Keyboards",
+        "slug": "keyboards"
+      }
+    },
+    {
+      "model": "product.category",
+      "pk": 5,
+      "fields": {
+        "name": "Mice",
+        "slug": "mice"
+      }
+    },
+    {
+      "model": "product.category",
+      "pk": 6,
+      "fields": {
+        "name": "Storage Devices",
+        "slug": "storage-devices"
+      }
+    },
+    {
+      "model": "product.category",
+      "pk": 7,
+      "fields": {
+        "name": "Computer Accessories",
+        "slug": "computer-accessories"
+      }
+    },
+    {
+      "model": "product.product",
+      "pk": 1,
+      "fields": {
+        "category": 1,
+        "name": "MacBook Pro 16\" M3",
+        "slug": "macbook-pro-16-m3",
+        "description": "Apple laptop with M3 chip and Retina display.",
+        "price": "2499.99",
+        "stock": 20,
+        "is_active": true,
+        "image": "products/macbook_pro_16.jpg",
+        "date_added": "2025-04-01"
+      }
+    },
+    {
+      "model": "product.product",
+      "pk": 2,
+      "fields": {
+        "category": 2,
+        "name": "Dell XPS Desktop",
+        "slug": "dell-xps-desktop",
+        "description": "Desktop with Intel Core i7, 16GB RAM, 1TB SSD.",
+        "price": "1299.00",
+        "stock": 15,
+        "is_active": true,
+        "image": "products/dell_xps.jpg",
+        "date_added": "2025-04-02"
+      }
+    },
+    {
+      "model": "product.product",
+      "pk": 3,
+      "fields": {
+        "category": 3,
+        "name": "LG UltraFine 4K",
+        "slug": "lg-ultrafine-4k",
+        "description": "27\" 4K monitor with USB-C and great color.",
+        "price": "499.99",
+        "stock": 30,
+        "is_active": true,
+        "image": "products/lg_ultrafine.jpg",
+        "date_added": "2025-04-02"
+      }
+    },
+    {
+      "model": "product.product",
+      "pk": 4,
+      "fields": {
+        "category": 4,
+        "name": "Logitech MX Keys",
+        "slug": "logitech-mx-keys",
+        "description": "Wireless backlit keyboard for productivity.",
+        "price": "119.99",
+        "stock": 50,
+        "is_active": true,
+        "image": "products/mx_keys.jpg",
+        "date_added": "2025-04-03"
+      }
+    },
+    {
+      "model": "product.product",
+      "pk": 5,
+      "fields": {
+        "category": 5,
+        "name": "Razer DeathAdder V2",
+        "slug": "razer-deathadder-v2",
+        "description": "Gaming mouse with ergonomic grip and precision.",
+        "price": "69.99",
+        "stock": 40,
+        "is_active": true,
+        "image": "products/deathadder.jpg",
+        "date_added": "2025-04-03"
+      }
+    },
+    {
+      "model": "product.product",
+      "pk": 6,
+      "fields": {
+        "category": 6,
+        "name": "Samsung T7 SSD 1TB",
+        "slug": "samsung-t7-1tb",
+        "description": "Fast external SSD for portable storage.",
+        "price": "139.99",
+        "stock": 25,
+        "is_active": true,
+        "image": "products/samsung_t7.jpg",
+        "date_added": "2025-04-04"
+      }
+    },
+    {
+      "model": "product.product",
+      "pk": 7,
+      "fields": {
+        "category": 7,
+        "name": "Logitech C920 Webcam",
+        "slug": "logitech-c920-webcam",
+        "description": "HD webcam for streaming and video calls.",
+        "price": "89.99",
+        "stock": 60,
+        "is_active": true,
+        "image": "products/c920.jpg",
+        "date_added": "2025-04-04"
+      }
+    }
+  ]
