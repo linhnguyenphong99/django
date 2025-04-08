@@ -15,7 +15,7 @@ services:
       - redis
     ports:
       - "8000:8000"
-    command: ["gunicorn", "--config", "/docker/gunicorn/gunicorn.conf.py", "django_project.wsgi:application"]
+    command: bash -c "while true; do python manage.py runserver 0.0.0.0:8000; sleep 2; done"
 
   db:
     image: postgres:15

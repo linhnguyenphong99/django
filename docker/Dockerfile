@@ -22,4 +22,4 @@ EXPOSE 8000
 COPY ./docker/gunicorn /docker/gunicorn
 
 # Chạy lệnh khởi động Gunicorn
-CMD ["python", "manage", "/docker/gunicorn/gunicorn.conf.py", "django_project.wsgi:application"]
+# CMD ["python", "manage", "/docker/gunicorn/gunicorn.conf.py", "django_project.wsgi:application"]

@@ -14,7 +14,4 @@ FROM node:18
 
 EXPOSE 3000
 
-# Install next from npm
-RUN npm install next
-
 CMD ["npm", "run", "dev"]
