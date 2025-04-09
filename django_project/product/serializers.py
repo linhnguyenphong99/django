@@ -12,6 +12,7 @@ class ProductSerializers(serializers.ModelSerializer):
             'description',
             'price',
             'image',
+            'get_image',
         ]
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:

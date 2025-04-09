@@ -18,8 +18,22 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
 export function Header() {
+  const categories = [
+    { name: "Electronics", count: 42 },
+    { name: "Clothing", count: 38 },
+    { name: "Books", count: 25 },
+    { name: "Home & Garden", count: 31 },
+    { name: "Sports", count: 19 },
+    { name: "Toys", count: 15 },
+  ];
+
   return (
     <header className="sticky top-0 z-50 flex h-16 w-full items-center justify-between border-b border-toolify-border bg-white px-4 md:px-6">
       <div className="flex items-center gap-6">
@@ -47,27 +61,39 @@ export function Header() {
               />
             </svg>
           </div>
-          <span className="text-xl font-semibold">Toolify.ai</span>
+          <span className="text-xl font-semibold">Logo</span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-6">
-          <Link href="/products" className="text-sm font-medium hover:text-toolify-purple">
-            Products
+        <nav className="hidden md:flex items-center space-x-6">
+          <Link href="/" className="text-sm font-medium transition-colors hover:text-primary">
+            Home
           </Link>
-          <Link href="/category" className="text-sm font-medium hover:text-toolify-purple">
-            Category
+          <HoverCard>
+            <HoverCardTrigger asChild>
+              <Link href="/category" className="text-sm font-medium transition-colors hover:text-primary">
+                Category
+              </Link>
+            </HoverCardTrigger>
+            <HoverCardContent className="w-80">
+              <div className="grid grid-cols-2 gap-4">
+                {categories.map((category) => (
+                  <Link
+                    key={category.name}
+                    href={`/category/${category.name.toLowerCase()}`}
+                    className="flex items-center justify-between p-2 rounded-md hover:bg-gray-100"
+                  >
+                    <span className="text-sm font-medium">{category.name}</span>
+                    <span className="text-xs text-gray-500">{category.count}</span>
+                  </Link>
+                ))}
+              </div>
+            </HoverCardContent>
+          </HoverCard>
+          <Link href="/about" className="text-sm font-medium transition-colors hover:text-primary">
+            About
           </Link>
-          <Link href="/ranking" className="text-sm font-medium hover:text-toolify-purple">
-            Ranking
-          </Link>
-          <Link href="/high-revenue-ais" className="text-sm font-medium hover:text-toolify-purple">
-            High Revenue AIs
-          </Link>
-          <Link href="/ai-model" className="text-sm font-medium hover:text-toolify-purple">
-            AI Models
-          </Link>
-          <Link href="/gpts" className="text-sm font-medium hover:text-toolify-purple">
-            GPTs
+          <Link href="/contact" className="text-sm font-medium transition-colors hover:text-primary">
+            Contact
           </Link>
         </nav>
       </div>
@@ -82,10 +108,12 @@ export function Header() {
         </div>
 
         <div className="hidden md:flex items-center gap-4">
+          <Link href="/login">
           <Button variant="outline" className="rounded-btn border-toolify-border">
             <LogIn className="h-4 w-4 mr-2" />
             Login
           </Button>
+          </Link>
           <Button className="rounded-btn bg-toolify-purple hover:bg-toolify-lightPurple text-white">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -146,12 +174,6 @@ export function Header() {
               </div>
               <nav className="grid gap-2">
                 <Link
-                  href="/products"
-                  className="flex items-center gap-2 text-sm font-medium hover:text-toolify-purple py-2"
-                >
-                  Products
-                </Link>
-                <Link
                   href="/category"
                   className="flex items-center gap-2 text-sm font-medium hover:text-toolify-purple py-2"
                 >
@@ -183,10 +205,12 @@ export function Header() {
                 </Link>
               </nav>
               <div className="flex flex-col gap-2 mt-4">
+                <Link href="/login">
                 <Button variant="outline" className="w-full justify-start rounded-btn">
                   <LogIn className="h-4 w-4 mr-2" />
                   Login
                 </Button>
+                </Link>
                 <Button className="w-full justify-start rounded-btn bg-toolify-purple hover:bg-toolify-lightPurple">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

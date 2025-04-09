@@ -1,26 +1,22 @@
-import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { Providers } from "./providers";
+import { metadata } from "./metadata";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
-  title: "Toolify.ai - Best AI Tools Directory & AI Tools List",
-  description: "Discover the largest AI tools directory & GPT Store Apps with over 24,800+ AI Websites and AI Tools. AI Tools list and GPTs Store Apps list are auto updated daily.",
-  icons: {
-    icon: "/favicon.svg",
-  },
-};
+export { metadata };
 
+// This is the server component (root layout)
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
