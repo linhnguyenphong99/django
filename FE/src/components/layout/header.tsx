@@ -89,8 +89,8 @@ export function Header() {
               </div>
             </HoverCardContent>
           </HoverCard>
-          <Link href="/about" className="text-sm font-medium transition-colors hover:text-primary">
-            About
+          <Link href="/threads" className="text-sm font-medium transition-colors hover:text-primary">
+          threads
           </Link>
           <Link href="/contact" className="text-sm font-medium transition-colors hover:text-primary">
             Contact
