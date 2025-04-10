@@ -65,8 +65,8 @@ export function Header() {
         </Link>
 
         <nav className="hidden md:flex items-center space-x-6">
-          <Link href="/" className="text-sm font-medium transition-colors hover:text-primary">
-            Home
+          <Link href="/whislist" className="text-sm font-medium transition-colors hover:text-primary">
+            Wishlist
           </Link>
           <HoverCard>
             <HoverCardTrigger asChild>
@@ -109,10 +109,15 @@ export function Header() {
 
         <div className="hidden md:flex items-center gap-4">
           <Link href="/login">
-          <Button variant="outline" className="rounded-btn border-toolify-border">
-            <LogIn className="h-4 w-4 mr-2" />
-            Login
-          </Button>
+            <Button variant="outline" className="rounded-btn border-toolify-border">
+              <LogIn className="h-4 w-4 mr-2" />
+              Login
+            </Button>
+          </Link>
+          <Link href="/user">
+            <Button variant="outline" className="rounded-btn border-toolify-border">
+              User
+            </Button>
           </Link>
           <Button className="rounded-btn bg-toolify-purple hover:bg-toolify-lightPurple text-white">
             <svg
