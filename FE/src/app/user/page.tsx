@@ -1,10 +1,10 @@
-import UserDetailContent from "@/components/user/detail";
+import UserContent from "@/components/user/index";
 import { Layout } from "@/components/layout/layout";
 
 export default function UserPage() {
   return (
     <Layout>
-      <UserDetailContent />
+      <UserContent />
     </Layout>
   );
 }

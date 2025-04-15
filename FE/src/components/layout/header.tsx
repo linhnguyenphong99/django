@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Menu, Search, Globe, ChevronDown, LogIn } from "lucide-react";
+import { Menu, Search, Globe, LogIn, UserIcon } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -114,30 +114,28 @@ export function Header() {
               Login
             </Button>
           </Link>
-          <Link href="/user">
-            <Button variant="outline" className="rounded-btn border-toolify-border">
-              User
-            </Button>
-          </Link>
-          <Button className="rounded-btn bg-toolify-purple hover:bg-toolify-lightPurple text-white">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="mr-2"
-            >
-              <path d="M12 2L2 7l10 5 10-5-10-5z" />
-              <path d="M2 17l10 5 10-5" />
-              <path d="M2 12l10 5 10-5" />
-            </svg>
-            Submit & Advertise
-          </Button>
+          <HoverCard>
+            <HoverCardTrigger asChild>
+              <Button variant="outline" className="rounded-btn border-toolify-border">
+                User
+              </Button>
+            </HoverCardTrigger>
+            <HoverCardContent className="w-48">
+              <div className="flex items-center p-2">
+                <img src="https://www.upwork.com/profile-portraits/c18nPIpEUWnr6d8f14v7t058tmlg1spFTHgFZkmGRlUJdgag08__yrirg2CMOf3gEl" alt="User" className="h-10 w-10 border rounded-full" />
+                <span className="text-sm font-medium ml-2">User</span>
+              </div>
+              <Link href="/user" className="block p-2 hover:bg-gray-100">
+                Profile
+              </Link>
+              <Link href="/user" className="block p-2 hover:bg-gray-100">
+                Settings
+              </Link>
+              <Link href="/user" className="block p-2 hover:bg-gray-100">
+                History
+              </Link>
+            </HoverCardContent>
+          </HoverCard>
         </div>
 
         <DropdownMenu>
@@ -153,7 +151,6 @@ export function Header() {
             <DropdownMenuItem>Chinese (Traditional)</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-
         <Sheet>
           <SheetTrigger asChild>
             <Button
