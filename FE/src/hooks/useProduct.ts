@@ -1,7 +1,7 @@
 "use client";
 
 import { index, show } from "@/api/product/api";
-import { Product } from "@/types/product";
+import { Product, ProductResponse } from "@/types/product";
 import { useEffect, useState } from "react";
 
 interface FilterParams {
@@ -9,21 +9,29 @@ interface FilterParams {
   tags?: string[];
   minPrice?: number;
   maxPrice?: number;
+  page?: number;
 }
 
+
 export default function useProduct(filters?: FilterParams) {
-  const [product, setProduct] = useState<Product[]>([]);
+  const [results, setResults] = useState<ProductResponse>({
+    next: null,
+    previous: null,
+    results: [],
+    total: 0,
+    page: 1,
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
     index(filters)
-      .then((data) => setProduct(data))
+      .then((data) => setResults(data))
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   }, [filters]);
 
-  return { product, loading };
+  return { results, loading };
 }
 
 export function useProductDetail(slug: string) {

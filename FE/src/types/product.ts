@@ -1,3 +1,12 @@
+
+export interface ProductResponse {
+    next: null;
+    previous: null;
+    results: Product[];
+    total: number;
+    page: number;
+}
+
 export interface Product {
     id: number;
     name: string;

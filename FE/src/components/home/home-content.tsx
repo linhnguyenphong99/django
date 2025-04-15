@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Filter, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Filter} from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Pagination } from "@/components/ui/pagination";
 
@@ -32,51 +32,20 @@ export function HomeContent() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(10);
 
-  const { product, loading } = useProduct(filters);
+  const { results, loading } = useProduct(filters);
 
   // Update total pages when product data changes
   useEffect(() => {
-    // Assuming the API returns pagination info in the response
-    // This is a placeholder - adjust based on your actual API response
-    if (product && product.length > 0) {
-      // For now, we'll set a fixed number of pages
-      // In a real implementation, this would come from the API
+    if (results && results.results.length > 0) {
       setTotalPages(10);
     }
-  }, [product]);
+  }, [results]);
 
-  const categories = [
-    "Text & Writing",
-    "Image",
-    "Video",
-    "Code & IT",
-    "Voice",
-    "Business",
-    "Marketing",
-    "AI Detector",
-    "Chatbot",
-    "Design & Art",
-    "Life Assistant",
-    "3D",
-    "Education",
-    "Prompt",
-    "Productivity",
-    "Other"
-  ];
+  const categories = ["Text & Writing", "Image", "Video", "Code & IT", "Voice", "Business", "Marketing", "AI Detector", "Chatbot", "Design & Art", "Life Assistant", "3D", "Education", "Prompt", "Productivity", "Other"];
 
-  const tags = [
-    "Popular",
-    "New",
-    "Featured",
-    "Best Seller",
-    "Limited Time",
-    "Sale",
-    "Premium",
-    "Free"
-  ];
+  const tags = ["Popular", "New", "Featured", "Best Seller", "Limited Time", "Sale", "Premium", "Free"];
 
   const handleCategoryChange = (category: string) => {
     if (loading) return;
@@ -91,7 +60,6 @@ export function HomeContent() {
       maxPrice: priceRange[1],
       page: 1 // Reset to first page when filters change
     });
-    setCurrentPage(1); // Reset current page
   };
 
   const handleTagChange = (tag: string) => {
@@ -107,7 +75,6 @@ export function HomeContent() {
       maxPrice: priceRange[1],
       page: 1 // Reset to first page when filters change
     });
-    setCurrentPage(1); // Reset current page
   };
 
   const handlePriceChange = (newRange: number[]) => {
@@ -120,7 +87,6 @@ export function HomeContent() {
       maxPrice: newRange[1],
       page: 1 // Reset to first page when filters change
     });
-    setCurrentPage(1); // Reset current page
   };
 
   const handleApplyFilters = () => {
@@ -128,9 +94,6 @@ export function HomeContent() {
   };
 
   const handlePageChange = (page: number) => {
-    if (page < 1 || page > totalPages || loading) return;
-
-    setCurrentPage(page);
     setFilters({
       ...filters,
       page
@@ -279,7 +242,7 @@ export function HomeContent() {
           ) : (
             <>
               <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-                {product.map(product => (
+                {results.results.map(product => (
                   <a key={product.id} href={product.get_absolute_url} className="block">
                     <div className="relative bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition-shadow h-full">
                       <img
@@ -313,8 +276,8 @@ export function HomeContent() {
               {/* Pagination */}
               {totalPages > -1 && (
                 <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
+                  currentPage={results.page}
+                  totalPages={results.total}
                   onPageChange={handlePageChange}
                   className="mt-12 mb-8"
                 />
