@@ -45,7 +45,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
   Future<void> _checkAuth() async {
     final token = await _authService.getToken();
-    if (mounted) {
+    if (token != null && mounted) {
       setState(() {
         _isLoading = false;
       });

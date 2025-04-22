@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'cart',
     'orders',
     'payments',
+    'userProfile',
 ]
 
 CORS_ALLOWED_ORIGINS = [
