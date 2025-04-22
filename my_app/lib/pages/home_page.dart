@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../pages/detail_page.dart';
 import '../pages/Filter_page.dart';
-import '../models/product.dart';
 import '../services/api_service.dart';
 
 class HomePage extends StatefulWidget {
@@ -14,7 +13,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final ApiService _apiService = ApiService();
   List<dynamic> _products = [];
-  bool _isLoading = true;
+  bool _isLoading = false;
   String? _error;
 
   @override

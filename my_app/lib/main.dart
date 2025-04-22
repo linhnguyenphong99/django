@@ -35,7 +35,7 @@ class AuthWrapper extends StatefulWidget {
 
 class _AuthWrapperState extends State<AuthWrapper> {
   final _authService = AuthService();
-  bool _isLoading = true;
+  bool _isLoading = false;
 
   @override
   void initState() {

@@ -12,7 +12,7 @@ class UserPage extends StatefulWidget {
 class _UserPageState extends State<UserPage> {
   final _authService = AuthService();
   Map<String, dynamic>? _userData;
-  bool _isLoading = true;
+  bool _isLoading = false;
 
   @override
   void initState() {

@@ -22,7 +22,6 @@ class Migration(migrations.Migration):
                 ('is_active', models.BooleanField(default=True)),
                 ('is_staff', models.BooleanField(default=False)),
                 ('last_login', models.DateTimeField(blank=True, null=True)),
-                ('email_verified_at', models.DateTimeField(blank=True, null=True)),
                 ('login_count', models.IntegerField(default=0)),
                 ('role', models.CharField(default='user', max_length=50)),
             ],
