@@ -1,0 +1,85 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
+class AuthService {
+  static const String baseUrl =
+      'http://localhost/api/v1'; // Updated to Django's default port
+  static const String tokenKey = 'auth_token';
+  static const String csrfTokenKey = 'csrf_token';
+
+  Future<String?> login(String username, String password) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/token/login'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'username': username,
+          'password': password,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        String? token;
+        if (data['auth_token'] != null) {
+          token = data['auth_token'] as String;
+        }
+
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString(tokenKey, token ?? '');
+        print(token);
+        return token;
+      } else {
+        final errorData = json.decode(response.body);
+        throw Exception(errorData['error'] ?? 'Login failed');
+      }
+    } catch (e) {
+      throw Exception('Login error: $e');
+    }
+  }
+
+  Future<void> logout() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final csrfToken = prefs.getString(csrfTokenKey);
+
+      if (csrfToken != null) {
+        await http.post(
+          Uri.parse('$baseUrl/logout/'),
+          headers: {
+            'X-CSRFToken': csrfToken,
+          },
+        );
+      }
+
+      // Clear all stored data
+      await prefs.remove(tokenKey);
+      await prefs.remove(csrfTokenKey);
+      await prefs.remove('user_data');
+    } catch (e) {
+      // Even if the API call fails, we still want to clear local data
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(tokenKey);
+      await prefs.remove(csrfTokenKey);
+      await prefs.remove('user_data');
+    }
+  }
+
+  Future<String?> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(tokenKey);
+  }
+
+  Future<Map<String, dynamic>?> getUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userData = prefs.getString('user_data');
+    if (userData != null) {
+      return json.decode(userData);
+    }
+    return null;
+  }
+}

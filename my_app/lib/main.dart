@@ -3,6 +3,8 @@ import 'pages/home_page.dart';
 import 'pages/cart_page.dart';
 import 'pages/user_page.dart';
 import 'pages/category_page.dart';
+import 'pages/login.dart';
+import 'services/auth_service.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +21,64 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const MainScreen(),
+      home: const AuthWrapper(),
+    );
+  }
+}
+
+class AuthWrapper extends StatefulWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  State<AuthWrapper> createState() => _AuthWrapperState();
+}
+
+class _AuthWrapperState extends State<AuthWrapper> {
+  final _authService = AuthService();
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkAuth();
+  }
+
+  Future<void> _checkAuth() async {
+    final token = await _authService.getToken();
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    return FutureBuilder<String?>(
+      future: _authService.getToken(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        if (snapshot.hasData && snapshot.data != null) {
+          return const MainScreen();
+        }
+
+        return const LoginPage();
+      },
     );
   }
 }

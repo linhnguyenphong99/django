@@ -1,10 +1,79 @@
 import 'package:flutter/material.dart';
+import '/services/auth_service.dart';
+import '/pages/login.dart';
 
-class UserPage extends StatelessWidget {
+class UserPage extends StatefulWidget {
   const UserPage({super.key});
 
   @override
+  State<UserPage> createState() => _UserPageState();
+}
+
+class _UserPageState extends State<UserPage> {
+  final _authService = AuthService();
+  Map<String, dynamic>? _userData;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    try {
+      final userData = await _authService.getUserData();
+      if (mounted) {
+        setState(() {
+          _userData = userData;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _handleLogout(BuildContext context) async {
+    try {
+      await _authService.logout();
+
+      if (context.mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to logout. Please try again.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    final userName = _userData?['name'] ?? 'User';
+    final userEmail = _userData?['email'] ?? 'No email available';
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
@@ -30,19 +99,19 @@ class UserPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          const Center(
+          Center(
             child: Text(
-              'John Doe',
-              style: TextStyle(
+              userName,
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
             ),
           ),
-          const Center(
+          Center(
             child: Text(
-              'john.doe@example.com',
-              style: TextStyle(
+              userEmail,
+              style: const TextStyle(
                 color: Colors.grey,
               ),
             ),
@@ -94,9 +163,7 @@ class UserPage extends StatelessWidget {
               'Logout',
               style: TextStyle(color: Colors.red),
             ),
-            onTap: () {
-              // TODO: Handle logout
-            },
+            onTap: () => _handleLogout(context),
           ),
         ],
       ),
