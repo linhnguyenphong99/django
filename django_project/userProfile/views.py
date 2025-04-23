@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import make_password
 from .models import User
 from rest_framework.authtoken.models import Token
-
+from .serializers import UserSerializer
 @api_view(['POST'])
 def register_user(request):
     try:
@@ -65,3 +65,11 @@ def login_user(request):
 
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user(request):
+    user = request.user
+    serializer = UserSerializer(user)
+    return Response(serializer.data, status=status.HTTP_200_OK)
