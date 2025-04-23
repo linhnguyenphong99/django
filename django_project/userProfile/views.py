@@ -7,6 +7,7 @@ from django.contrib.auth.hashers import make_password
 from .models import User
 from rest_framework.authtoken.models import Token
 from .serializers import UserSerializer
+
 @api_view(['POST'])
 def register_user(request):
     try:
