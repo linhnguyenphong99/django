@@ -12,18 +12,18 @@ def register_user(request):
     try:
         # Get data from request
         email    = request.data.get('email')
+        username = request.data.get('username')
         password = request.data.get('password')
 
         # Check if user already exists
         if User.objects.filter(email=email).exists():
             return Response({'error': 'Email already exists'}, status=status.HTTP_400_BAD_REQUEST)
-        if User.objects.filter(email=email).exists():
-            return Response({'error': 'email already exists'}, status=status.HTTP_400_BAD_REQUEST)
 
         # Create user
         user = User.objects.create(
-            email=email,
-            password=make_password(password),
+            email    = email,
+            username = username,
+            password = make_password(password),
         )
 
         # Generate token

@@ -8,18 +8,22 @@ class AuthService {
   static const String tokenKey = 'auth_token';
   static const String csrfTokenKey = 'csrf_token';
 
-  Future<String?> login(String username, String password) async {
+  Future<String?> login(String email, String password) async {
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/token/login'),
+        Uri.parse('$baseUrl/login'),
         headers: {
           'Content-Type': 'application/json',
         },
         body: json.encode({
-          'username': username,
+          'email': email,
           'password': password,
         }),
       );
+      print({
+        'email': email,
+        'password': password,
+      });
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -31,7 +35,6 @@ class AuthService {
 
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString(tokenKey, token ?? '');
-        print(token);
         return token;
       } else {
         final errorData = json.decode(response.body);
@@ -39,6 +42,31 @@ class AuthService {
       }
     } catch (e) {
       throw Exception('Login error: $e');
+    }
+  }
+
+  Future<void> register(String email, String password, String name) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/register'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'email': email,
+          'password': password,
+          'username': name,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        return json.decode(response.body);
+      } else {
+        final errorData = json.decode(response.body);
+        throw Exception(errorData['error'] ?? 'Register failed');
+      }
+    } catch (e) {
+      throw Exception('Register error: $e');
     }
   }
 
