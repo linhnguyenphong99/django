@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../pages/detail_page.dart';
 import '../pages/Filter_page.dart';
 import '../services/api_service.dart';
+import '../services/auth_service.dart';
+import '../providers/filter_provider.dart';
+import '../models/product.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,33 +16,53 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final ApiService _apiService = ApiService();
-  List<dynamic> _products = [];
+  final AuthService _authService = AuthService();
+  List<Product> _products = [];
   bool _isLoading = false;
   String? _error;
 
   @override
   void initState() {
     super.initState();
+    _checkAuthAndLoadProducts();
+  }
+
+  Future<void> _checkAuthAndLoadProducts() async {
+    final token = await _authService.getToken();
+    if (token == null && mounted) {
+      Navigator.pushReplacementNamed(context, '/login');
+      return;
+    }
     _loadProducts();
   }
 
   Future<void> _loadProducts() async {
+    setState(() {
+      _isLoading = true;
+    });
     try {
       final products = await _apiService.getProducts();
-      setState(() {
-        _products = products;
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _products = products.cast<Product>();
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _error = e.toString();
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _error = e.toString();
+          _isLoading = false;
+        });
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final filterProvider = Provider.of<FilterProvider>(context);
+    final filteredProducts = filterProvider.applyFilters(_products);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home Page'),
@@ -46,7 +70,10 @@ class _HomePageState extends State<HomePage> {
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {
-              // TODO: Implement search
+              showSearch(
+                context: context,
+                delegate: ProductSearchDelegate(_products),
+              );
             },
           ),
         ],
@@ -106,7 +133,41 @@ class _HomePageState extends State<HomePage> {
                             Expanded(
                               child: OutlinedButton.icon(
                                 onPressed: () {
-                                  // TODO: Implement sort
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: const Text('Sort By'),
+                                      content: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          ListTile(
+                                            title: const Text('Name'),
+                                            leading: Radio<String>(
+                                              value: 'name',
+                                              groupValue: filterProvider.sortBy,
+                                              onChanged: (value) {
+                                                filterProvider
+                                                    .setSortBy(value!);
+                                                Navigator.pop(context);
+                                              },
+                                            ),
+                                          ),
+                                          ListTile(
+                                            title: const Text('Price'),
+                                            leading: Radio<String>(
+                                              value: 'price',
+                                              groupValue: filterProvider.sortBy,
+                                              onChanged: (value) {
+                                                filterProvider
+                                                    .setSortBy(value!);
+                                                Navigator.pop(context);
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
                                 },
                                 icon: const Icon(Icons.sort),
                                 label: const Text('Sort'),
@@ -127,9 +188,9 @@ class _HomePageState extends State<HomePage> {
                           crossAxisSpacing: 16,
                           mainAxisSpacing: 16,
                         ),
-                        itemCount: _products.length,
+                        itemCount: filteredProducts.length,
                         itemBuilder: (context, index) {
-                          final product = _products[index];
+                          final product = filteredProducts[index];
                           return GestureDetector(
                             onTap: () {
                               Navigator.push(
@@ -208,27 +269,97 @@ class _HomePageState extends State<HomePage> {
                           );
                         },
                       ),
-                      const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(
-                          5,
-                          (index) => Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 4),
-                            width: 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: index == 0
-                                  ? Theme.of(context).primaryColor
-                                  : Colors.grey[300],
-                            ),
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),
+    );
+  }
+}
+
+class ProductSearchDelegate extends SearchDelegate {
+  final List<Product> products;
+
+  ProductSearchDelegate(this.products);
+
+  @override
+  List<Widget>? buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: const Icon(Icons.clear),
+        onPressed: () {
+          query = '';
+        },
+      ),
+    ];
+  }
+
+  @override
+  Widget? buildLeading(BuildContext context) {
+    return IconButton(
+      icon: const Icon(Icons.arrow_back),
+      onPressed: () {
+        close(context, null);
+      },
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    final results = products.where((product) {
+      return product.name.toLowerCase().contains(query.toLowerCase()) ||
+          product.description.toLowerCase().contains(query.toLowerCase());
+    }).toList();
+
+    return ListView.builder(
+      itemCount: results.length,
+      itemBuilder: (context, index) {
+        final product = results[index];
+        return ListTile(
+          leading: CircleAvatar(
+            backgroundImage: NetworkImage(product.imageUrl),
+          ),
+          title: Text(product.name),
+          subtitle: Text('\$${product.price}'),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DetailPage(slug: product.slug),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    final suggestions = products.where((product) {
+      return product.name.toLowerCase().contains(query.toLowerCase()) ||
+          product.description.toLowerCase().contains(query.toLowerCase());
+    }).toList();
+
+    return ListView.builder(
+      itemCount: suggestions.length,
+      itemBuilder: (context, index) {
+        final product = suggestions[index];
+        return ListTile(
+          leading: CircleAvatar(
+            backgroundImage: NetworkImage(product.imageUrl),
+          ),
+          title: Text(product.name),
+          subtitle: Text('\$${product.price}'),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DetailPage(slug: product.slug),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

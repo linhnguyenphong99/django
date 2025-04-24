@@ -5,6 +5,7 @@ import 'pages/cart_page.dart';
 import 'pages/user_page.dart';
 import 'pages/category_page.dart';
 import 'pages/login.dart';
+import 'pages/register.dart';
 import 'pages/detail_page.dart';
 import 'pages/checkout_page.dart';
 import 'pages/wishlist_page.dart';
@@ -12,6 +13,7 @@ import 'pages/profile_page.dart';
 import 'services/auth_service.dart';
 import 'providers/cart_provider.dart';
 import 'providers/wishlist_provider.dart';
+import 'providers/filter_provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -26,6 +28,7 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => CartProvider()),
         ChangeNotifierProvider(create: (_) => WishlistProvider()),
+        ChangeNotifierProvider(create: (_) => FilterProvider()),
       ],
       child: MaterialApp(
         title: 'Computer Store',
@@ -35,8 +38,10 @@ class MyApp extends StatelessWidget {
         ),
         home: const AuthWrapper(),
         routes: {
+          '/login': (context) => const LoginPage(),
+          '/register': (context) => const RegisterPage(),
           '/cart': (context) => const CartPage(),
-          '/detail': (context) => const DetailPage(slug: 'xxx'),
+          '/detail': (context) => const DetailPage(slug: 'slug'),
           '/checkout': (context) => const CheckoutPage(),
           '/wishlist': (context) => const WishlistPage(),
           '/profile': (context) => const ProfilePage(),
@@ -65,7 +70,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
 
   Future<void> _checkAuth() async {
     final token = await _authService.getToken();
-    if (token != null && mounted) {
+    if (mounted) {
       setState(() {
         _isLoading = false;
       });
