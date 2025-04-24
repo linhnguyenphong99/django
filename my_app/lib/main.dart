@@ -10,10 +10,12 @@ import 'pages/detail_page.dart';
 import 'pages/checkout_page.dart';
 import 'pages/wishlist_page.dart';
 import 'pages/profile_page.dart';
+import 'pages/settings_page.dart';
 import 'services/auth_service.dart';
 import 'providers/cart_provider.dart';
 import 'providers/wishlist_provider.dart';
 import 'providers/filter_provider.dart';
+import 'providers/theme_provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -29,22 +31,25 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => CartProvider()),
         ChangeNotifierProvider(create: (_) => WishlistProvider()),
         ChangeNotifierProvider(create: (_) => FilterProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ],
-      child: MaterialApp(
-        title: 'Computer Store',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-          useMaterial3: true,
-        ),
-        home: const AuthWrapper(),
-        routes: {
-          '/login': (context) => const LoginPage(),
-          '/register': (context) => const RegisterPage(),
-          '/cart': (context) => const CartPage(),
-          '/detail': (context) => const DetailPage(slug: 'slug'),
-          '/checkout': (context) => const CheckoutPage(),
-          '/wishlist': (context) => const WishlistPage(),
-          '/profile': (context) => const ProfilePage(),
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp(
+            title: 'Computer Store',
+            theme: themeProvider.themeData,
+            home: const AuthWrapper(),
+            routes: {
+              '/login': (context) => const LoginPage(),
+              '/register': (context) => const RegisterPage(),
+              '/cart': (context) => const CartPage(),
+              '/detail': (context) => const DetailPage(slug: 'slug'),
+              '/checkout': (context) => const CheckoutPage(),
+              '/wishlist': (context) => const WishlistPage(),
+              '/profile': (context) => const ProfilePage(),
+              '/settings': (context) => const SettingsPage(),
+            },
+          );
         },
       ),
     );

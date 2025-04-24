@@ -67,9 +67,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: cart.items.length,
+                itemCount: cart.selectedItems.length,
                 itemBuilder: (ctx, index) {
-                  final item = cart.items[index];
+                  final item = cart.selectedItems[index];
                   return ListTile(
                     leading: CircleAvatar(
                       backgroundImage: NetworkImage(item.imageUrl),
@@ -97,7 +97,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     ),
                   ),
                   Text(
-                    '\$${cart.totalAmount.toStringAsFixed(2)}',
+                    '\$${cart.selectedItemsTotal.toStringAsFixed(2)}',
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,

@@ -15,36 +15,59 @@ class CartPage extends StatelessWidget {
         title: const Text('Shopping Cart'),
         actions: [
           if (cart.items.isNotEmpty)
-            IconButton(
-              icon: const Icon(Icons.delete_sweep),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (ctx) => AlertDialog(
-                    title: const Text('Clear Cart'),
-                    content:
-                        const Text('Are you sure you want to clear your cart?'),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.of(ctx).pop(),
-                        child: const Text('Cancel'),
+            PopupMenuButton<String>(
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: 'select_all',
+                  child: Text('Select All'),
+                ),
+                const PopupMenuItem(
+                  value: 'deselect_all',
+                  child: Text('Deselect All'),
+                ),
+                const PopupMenuItem(
+                  value: 'clear',
+                  child: Text('Clear Cart'),
+                ),
+              ],
+              onSelected: (value) {
+                switch (value) {
+                  case 'select_all':
+                    cart.selectAllItems();
+                    break;
+                  case 'deselect_all':
+                    cart.deselectAllItems();
+                    break;
+                  case 'clear':
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Clear Cart'),
+                        content: const Text(
+                            'Are you sure you want to clear your cart?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(ctx).pop(),
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              cart.clear();
+                              Navigator.of(ctx).pop();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Cart cleared successfully'),
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+                            },
+                            child: const Text('Clear'),
+                          ),
+                        ],
                       ),
-                      TextButton(
-                        onPressed: () {
-                          cart.clear();
-                          Navigator.of(ctx).pop();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Cart cleared successfully'),
-                              duration: Duration(seconds: 2),
-                            ),
-                          );
-                        },
-                        child: const Text('Clear'),
-                      ),
-                    ],
-                  ),
-                );
+                    );
+                    break;
+                }
               },
             ),
         ],
@@ -95,8 +118,20 @@ class CartPage extends StatelessWidget {
                           child: Padding(
                             padding: const EdgeInsets.all(8),
                             child: ListTile(
-                              leading: CircleAvatar(
-                                backgroundImage: NetworkImage(item.imageUrl),
+                              leading: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Checkbox(
+                                    value: item.isSelected,
+                                    onChanged: (value) {
+                                      cart.toggleItemSelection(item.name);
+                                    },
+                                  ),
+                                  CircleAvatar(
+                                    backgroundImage:
+                                        NetworkImage(item.imageUrl),
+                                  ),
+                                ],
                               ),
                               title: Text(item.name),
                               subtitle: Row(
@@ -166,13 +201,13 @@ class CartPage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text(
-                          'Subtotal',
+                          'Selected Items Total',
                           style: TextStyle(
                             fontSize: 16,
                           ),
                         ),
                         Text(
-                          '\$${cart.totalAmount.toStringAsFixed(2)}',
+                          '\$${cart.selectedItemsTotal.toStringAsFixed(2)}',
                           style: const TextStyle(
                             fontSize: 16,
                           ),
@@ -204,14 +239,16 @@ class CartPage extends StatelessWidget {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const CheckoutPage(),
-                            ),
-                          );
-                        },
+                        onPressed: cart.selectedItems.isEmpty
+                            ? null
+                            : () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const CheckoutPage(),
+                                  ),
+                                );
+                              },
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),

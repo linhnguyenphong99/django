@@ -110,4 +110,41 @@ class AuthService {
     }
     return null;
   }
+
+  Future<Map<String, dynamic>?> getUserInfo() async {
+    // Hardcoded user information
+    return {
+      'name': 'John Doe',
+      'email': 'john.doe@example.com',
+    };
+  }
+
+  Future<void> changePassword(
+      String currentPassword, String newPassword) async {
+    try {
+      final token = await getToken();
+      if (token == null) {
+        throw Exception('Not authenticated');
+      }
+
+      final response = await http.post(
+        Uri.parse('$baseUrl/change-password'),
+        headers: {
+          'Authorization': 'Token $token',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'current_password': currentPassword,
+          'new_password': newPassword,
+        }),
+      );
+
+      if (response.statusCode != 200) {
+        final errorData = json.decode(response.body);
+        throw Exception(errorData['error'] ?? 'Failed to change password');
+      }
+    } catch (e) {
+      throw Exception('Error changing password: $e');
+    }
+  }
 }

@@ -6,8 +6,17 @@ class CartProvider with ChangeNotifier {
 
   List<CartItem> get items => [..._items];
 
+  List<CartItem> get selectedItems =>
+      _items.where((item) => item.isSelected).toList();
+
   double get totalAmount {
     return _items.fold(0, (sum, item) => sum + item.totalPrice);
+  }
+
+  double get selectedItemsTotal {
+    return _items
+        .where((item) => item.isSelected)
+        .fold(0, (sum, item) => sum + item.totalPrice);
   }
 
   void addItem(CartItem item) {
@@ -28,6 +37,28 @@ class CartProvider with ChangeNotifier {
 
   void clear() {
     _items.clear();
+    notifyListeners();
+  }
+
+  void toggleItemSelection(String productName) {
+    final index = _items.indexWhere((item) => item.name == productName);
+    if (index != -1) {
+      _items[index].isSelected = !_items[index].isSelected;
+      notifyListeners();
+    }
+  }
+
+  void selectAllItems() {
+    for (var item in _items) {
+      item.isSelected = true;
+    }
+    notifyListeners();
+  }
+
+  void deselectAllItems() {
+    for (var item in _items) {
+      item.isSelected = false;
+    }
     notifyListeners();
   }
 }
