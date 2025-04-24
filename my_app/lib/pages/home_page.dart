@@ -130,18 +130,18 @@ class _HomePageState extends State<HomePage> {
                         itemCount: _products.length,
                         itemBuilder: (context, index) {
                           final product = _products[index];
-                          return Card(
-                            clipBehavior: Clip.antiAlias,
-                            child: InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        DetailPage(productIndex: product.id),
-                                  ),
-                                );
-                              },
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      DetailPage(slug: product.slug),
+                                ),
+                              );
+                            },
+                            child: Card(
+                              clipBehavior: Clip.antiAlias,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [

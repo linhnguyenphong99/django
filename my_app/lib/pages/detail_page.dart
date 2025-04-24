@@ -1,19 +1,131 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/cart_provider.dart';
+import '../models/cart_item.dart';
+import '../models/product.dart';
+import '../services/api_service.dart';
+import '../providers/wishlist_provider.dart';
 
-class DetailPage extends StatelessWidget {
-  final int productIndex;
-  const DetailPage({super.key, required this.productIndex});
+class DetailPage extends StatefulWidget {
+  final String slug;
+  const DetailPage({super.key, required this.slug});
+
+  @override
+  State<DetailPage> createState() => _DetailPageState();
+}
+
+class _DetailPageState extends State<DetailPage> {
+  final ApiService _apiService = ApiService();
+  Product? _product;
+  bool _isLoading = true;
+  String? _error;
+  int _currentImageIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProductDetails();
+  }
+
+  Future<void> _loadProductDetails() async {
+    try {
+      final product = await _apiService.getProductBySlug(widget.slug);
+      setState(() {
+        _isLoading = false;
+        _product = product;
+        print(_product);
+      });
+    } catch (e) {
+      setState(() {
+        _error = e.toString();
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    if (_error != null) {
+      return Scaffold(
+        appBar: AppBar(),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('Error: $_error'),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _loadProductDetails,
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (_product == null) {
+      return const Scaffold(
+        body: Center(
+          child: Text('Product not found'),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Product Detail'),
+        title: Text(_product?.name ?? 'Product Detail'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.favorite_border),
+            icon: Icon(
+              Provider.of<WishlistProvider>(context).isInWishlist(_product!.id)
+                  ? Icons.favorite
+                  : Icons.favorite_border,
+              color: Provider.of<WishlistProvider>(context)
+                      .isInWishlist(_product!.id)
+                  ? Colors.red
+                  : null,
+            ),
             onPressed: () {
-              // TODO: Add to wishlist
+              final wishlist =
+                  Provider.of<WishlistProvider>(context, listen: false);
+              if (wishlist.isInWishlist(_product!.id)) {
+                wishlist.removeItem(_product!.id);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('${_product!.name} removed from wishlist'),
+                    duration: const Duration(seconds: 2),
+                    action: SnackBarAction(
+                      label: 'Undo',
+                      onPressed: () {
+                        wishlist.addItem(_product!);
+                      },
+                    ),
+                  ),
+                );
+              } else {
+                wishlist.addItem(_product!);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('${_product!.name} added to wishlist'),
+                    duration: const Duration(seconds: 2),
+                    action: SnackBarAction(
+                      label: 'View Wishlist',
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/wishlist');
+                      },
+                    ),
+                  ),
+                );
+              }
             },
           ),
           IconButton(
@@ -35,11 +147,25 @@ class DetailPage extends StatelessWidget {
                     height: 300,
                     color: const Color.fromARGB(255, 130, 63, 63),
                     child: Center(
-                      child: Icon(
-                        Icons.computer,
-                        size: 120,
-                        color: Colors.grey[400],
-                      ),
+                      child: _product?.name != null
+                          ? Image.network(
+                              _product!.imageUrl,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                              height: double.infinity,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Icon(
+                                  Icons.computer,
+                                  size: 120,
+                                  color: Colors.grey[400],
+                                );
+                              },
+                            )
+                          : Icon(
+                              Icons.computer,
+                              size: 120,
+                              color: Colors.grey[400],
+                            ),
                     ),
                   ),
                   Padding(
@@ -55,36 +181,10 @@ class DetailPage extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        SizedBox(
-                          height: 80,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: 5,
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding: const EdgeInsets.only(right: 8),
-                                child: InkWell(
-                                  onTap: () {
-                                    // TODO: Change main image
-                                  },
-                                  child: Container(
-                                    width: 80,
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey[200],
-                                      border: Border.all(
-                                        color: Theme.of(context).primaryColor,
-                                        width: 2,
-                                      ),
-                                    ),
-                                    child: Icon(
-                                      Icons.computer,
-                                      size: 40,
-                                      color: Colors.grey[400],
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
+                        const Text(
+                          'No gallery images available',
+                          style: TextStyle(
+                            color: Colors.grey,
                           ),
                         ),
                       ],
@@ -95,55 +195,21 @@ class DetailPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Gaming Laptop XYZ',
-                          style: TextStyle(
+                        Text(
+                          _product?.name ?? 'Product Name',
+                          style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          '\$1,499.99',
+                          '\$${_product?.price ?? '0.00'}',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: Theme.of(context).primaryColor,
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'Specifications',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        const SpecificationItem(
-                          icon: Icons.memory,
-                          title: 'Processor',
-                          value: 'Intel Core i7-12700H',
-                        ),
-                        const SpecificationItem(
-                          icon: Icons.sd_storage,
-                          title: 'RAM',
-                          value: '16GB DDR4',
-                        ),
-                        const SpecificationItem(
-                          icon: Icons.storage,
-                          title: 'Storage',
-                          value: '512GB NVMe SSD',
-                        ),
-                        const SpecificationItem(
-                          icon: Icons.videogame_asset,
-                          title: 'Graphics',
-                          value: 'NVIDIA RTX 3060 6GB',
-                        ),
-                        const SpecificationItem(
-                          icon: Icons.display_settings,
-                          title: 'Display',
-                          value: '15.6" FHD 144Hz',
                         ),
                         const SizedBox(height: 16),
                         const Text(
@@ -154,11 +220,9 @@ class DetailPage extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
-                          'Experience ultimate gaming performance with this powerful gaming laptop. '
-                          'Featuring the latest Intel processor and NVIDIA graphics, this laptop delivers '
-                          'exceptional performance for gaming and content creation.',
-                          style: TextStyle(
+                        Text(
+                          _product?.description ?? 'No description available',
+                          style: const TextStyle(
                             height: 1.5,
                           ),
                         ),
@@ -187,7 +251,23 @@ class DetailPage extends StatelessWidget {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () {
-                      // TODO: Add to cart
+                      final cart =
+                          Provider.of<CartProvider>(context, listen: false);
+                      cart.addItem(
+                        CartItem(
+                          name: _product?.name ?? 'Product',
+                          price:
+                              double.tryParse(_product?.price ?? '0.0') ?? 0.0,
+                          imageUrl: _product?.imageUrl ?? '',
+                        ),
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Added to cart!'),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                      Navigator.pushNamed(context, '/cart');
                     },
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
@@ -208,44 +288,6 @@ class DetailPage extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class SpecificationItem extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String value;
-
-  const SpecificationItem({
-    super.key,
-    required this.icon,
-    required this.title,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: Colors.grey),
-          const SizedBox(width: 8),
-          Text(
-            '$title: ',
-            style: const TextStyle(
-              color: Colors.grey,
-            ),
-          ),
-          Text(
-            value,
-            style: const TextStyle(
-              fontWeight: FontWeight.w500,
             ),
           ),
         ],

@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'pages/home_page.dart';
 import 'pages/cart_page.dart';
 import 'pages/user_page.dart';
 import 'pages/category_page.dart';
 import 'pages/login.dart';
+import 'pages/detail_page.dart';
+import 'pages/checkout_page.dart';
+import 'pages/wishlist_page.dart';
+import 'pages/profile_page.dart';
 import 'services/auth_service.dart';
+import 'providers/cart_provider.dart';
+import 'providers/wishlist_provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,13 +22,26 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Computer Store',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider(create: (_) => WishlistProvider()),
+      ],
+      child: MaterialApp(
+        title: 'Computer Store',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+          useMaterial3: true,
+        ),
+        home: const AuthWrapper(),
+        routes: {
+          '/cart': (context) => const CartPage(),
+          '/detail': (context) => const DetailPage(slug: 'xxx'),
+          '/checkout': (context) => const CheckoutPage(),
+          '/wishlist': (context) => const WishlistPage(),
+          '/profile': (context) => const ProfilePage(),
+        },
       ),
-      home: const AuthWrapper(),
     );
   }
 }
@@ -35,7 +55,7 @@ class AuthWrapper extends StatefulWidget {
 
 class _AuthWrapperState extends State<AuthWrapper> {
   final _authService = AuthService();
-  bool _isLoading = false;
+  bool _isLoading = true;
 
   @override
   void initState() {
